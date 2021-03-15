@@ -7,7 +7,7 @@ repositories {
 }
 
 dependencies {
-    def springVersion = '5.2.9.RELEASE'
+    def springVersion = '5.3.4'
     testImplementation 'junit:junit:4.13'
     implementation 'com.google.guava:guava:29.0-jre'
     compile group: 'org.springframework', name: 'spring-core', version: springVersion
