@@ -18,7 +18,9 @@ public class Main {
         
         System.out.println("Oliot:");
         for (Player player : players) {
+            if(player.getNationality().equals("FIN")){
             System.out.println(player);
+            }
         }   
     }
   

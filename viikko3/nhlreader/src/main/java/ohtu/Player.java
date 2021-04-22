@@ -9,6 +9,7 @@ public class Player {
     private int assists;
     private int penalties;
     private int games;
+    private int points;
 
     public void setName(String name, String nationality, String team, 
     int goals, int assists, int games, int penalties) {
@@ -19,6 +20,7 @@ public class Player {
         this.assists = assists;
         this.games = games;
         this.penalties = penalties;
+        this.points = goals + assists;
     }
 
     public String getName() {
@@ -49,10 +51,14 @@ public class Player {
         return games;
     }
 
+    public int getPoints() {
+        return points;
+    }
+
 
     @Override
     public String toString() {
-        return name + " team: "  + team + " goals: " + goals + " assists: " + assists;
+        return name + "   " + team + "   " +  goals + " + " + assists + " = " + getPoints();
     }
       
 }
