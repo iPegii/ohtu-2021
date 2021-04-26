@@ -77,16 +77,19 @@ public class Stepdefs {
 
     @When("a valid username {string} and too short password {string} and matching password confirmation are entered")
     public void aValidUsernameAndTooShortPasswordAndMatchingPasswordConfirmationAreEntered(String username, String password) {
+    registerIsSelected();
     registerInWith(username, password);
     }
 
     @When("too short username {string} and password {string} and matching password confirmation are entered")
     public void tooShortUsernameAndPasswordAndMatchingPasswordConfirmationAreEntered(String username, String password) {
+    registerIsSelected();
     registerInWith(username, password);
     }
 
     @When("a valid username {string} and password {string} and matching password confirmation are entered")
     public void aValidUsernameAndPasswordAndMatchingPasswordConfirmationAreEntered(String username, String password) {
+    registerIsSelected();
     registerInWith(username, password);
     }
 
@@ -95,13 +98,32 @@ public class Stepdefs {
     pageHasContent("Welcome to Ohtu Application!");
     }
 
+    @Given("user with username {string} with password {string} is successfully created")
+    public void userWithUsernameWithPasswordIsSuccessfullyCreated(String username, String password) {
+        registerIsSelected();
+        registerInWith(username,password);
+    }
 
+    @When("a registered username {string} and password {string} are entered")
+    public void aRegisteredUsernameAndPasswordAreEntered(String username, String password) {
+    logInWith(username,password);
+    }
 
+    @Given("user with username {string} and password {string} is tried to be created")
+    public void userWithUsernameAndPasswordIsTriedToBeCreated(String username, String password) {
+        registerIsSelected();
+        registerInWith(username,password);
+    }
 
+    @When("not registered username {string} and password {string} are entered")
+    public void notRegisteredUsernameAndPasswordAreEntered(String username, String password) {
+    logInWith(username,password);
+    }
+    @Then("user is not logged in")
+    public void userIsNotLoggedIn() {
+     pageHasContent("invalid username or password");
+    }
 
-
-
-    
     @After
     public void tearDown(){
         driver.quit();
@@ -145,5 +167,11 @@ public class Stepdefs {
         element.sendKeys(passwordConfirmation);
         element = driver.findElement(By.name("signup"));
         element.submit();  
+    } 
+
+    public void registerIsSelected() {
+        driver.get(baseUrl);
+        WebElement element = driver.findElement(By.linkText("register new user"));       
+        element.click();   
     } 
 }
