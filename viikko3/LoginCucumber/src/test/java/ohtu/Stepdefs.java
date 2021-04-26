@@ -82,4 +82,76 @@ public class Stepdefs {
     public void usernameIsNonexistentRespond(String usernameIsNonexistentRespond) {
         assertTrue(io.getPrints().contains(usernameIsNonexistentRespond));
     } 
+
+    @Given("user {string} with password {string} is created")
+    public void userWithPasswordIsCreated(String string, String string2) {
+    inputLines.add("new");
+    inputLines.add(string);
+    inputLines.add(string2);
+       
+    io = new StubIO(inputLines); 
+    app = new App(io, auth);
+    app.run();
+    }
+
+    @When("username {string} with password {string} are entered")
+    public void usernameWithPasswordAreEntered(String string, String string2) {
+        inputLines.add(string);
+        inputLines.add(string2);
+
+        io = new StubIO(inputLines); 
+       app = new App(io, auth);
+       app.run();
+
+    }
+
+    @Given("command new is selected")
+    public void commandNewIsSelected() {
+    inputLines.add("new");
+    }
+
+    @When("creation fails with already taken username and valid password")
+    public void creatingWithTakenUsernameValidPassword() {
+        inputLines.add("pekka");
+        inputLines.add("salainen1");
+
+        io = new StubIO(inputLines); 
+       app = new App(io, auth);
+       app.run();
+
+    }
+
+    @When("creation fails with too short username and valid password")
+    public void creationFailShortUsernameValidPassword() {
+        inputLines.add("sa");
+        inputLines.add("salainen1");
+
+        io = new StubIO(inputLines); 
+       app = new App(io, auth);
+       app.run();
+
+    }
+
+    @When("creation fails with valid username and too short password")
+    public void creationFailValidUsernameShortPassword() {
+        inputLines.add("eero");
+        inputLines.add("salai");
+
+        io = new StubIO(inputLines); 
+       app = new App(io, auth);
+       app.run();
+
+    }
+
+    @When("creation fails with valid username and password long enough but consisting of only letters")
+    public void creationFailsValidUsernamePasswordLongNotValid() {
+        inputLines.add("validNimi");
+        inputLines.add("pitkasalainensalasana");
+
+        io = new StubIO(inputLines); 
+       app = new App(io, auth);
+       app.run();
+
+    }
+
 }
