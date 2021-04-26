@@ -36,6 +36,11 @@ public class Stepdefs {
     @When("correct username {string} and incorrect password {string} are given")
     public void correctUsernameAndIncorrectPasswordAreGiven(String username, String password) {
         logInWith(username, password);
+    }  
+
+    @When("nonexistent username {string} and password {string} are given")
+    public void nonexistentUsernameAndPasswordtringAreGiven(String username, String password) {
+        logInWith(username, password);
     }    
     
     @Then("user is not logged in and error message is given")
