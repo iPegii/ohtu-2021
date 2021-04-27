@@ -2,8 +2,10 @@ package ohtu.verkkokauppa;
 
 import org.junit.Before;
 import org.junit.Test;
+import java.util.ArrayList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
 
     public class KauppaTest{
 
@@ -133,6 +135,125 @@ import static org.mockito.Mockito.*;
 
         //(String nimi, int viitenumero, String tililta, String tilille, int summa
         verify(pankki).tilisiirto(eq("pekka"), eq(42), eq("12345"), eq("33333-44455"),eq(5));   
+        // toistaiseksi ei v�litetty kutsussa k�ytetyist� parametreista
+    }
+
+    @Test
+    public void aloitaAsiointiNollaaOstostenTiedot() {
+
+        /*
+        aloitetaan asiointi, koriin lisätään tuote,
+         jota on varastossa tarpeeksi ja tuote joka on loppu ja suoritetaan ostos,
+          varmista että kutsutaan pankin metodia tilisiirto oikealla asiakkaalla, tilinumerolla ja summalla
+         */
+        when(viite.uusi()).thenReturn(42);
+
+        // määritellään että tuote numero 1 on maito jonka hinta on 5 ja saldo 10
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.saldo(2)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
+        when(varasto.haeTuote(2)).thenReturn(new Tuote(2, "keksi", 5));
+
+        // sitten testattava kauppa 
+        Kauppa k = new Kauppa(varasto, pankki, viite);     
+
+        // Tehdään feikkiostoksia
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);     // ostetaan tuotetta numero 1 eli maitoa
+        k.lisaaKoriin(1); 
+        k.lisaaKoriin(1); 
+        k.lisaaKoriin(1); 
+        k.lisaaKoriin(1);  // 5 kertaa  
+
+        
+        // tehdään ostokset
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);     // ostetaan tuotetta numero 1 eli maitoa
+        k.lisaaKoriin(2);     // ostetaan tuotetta numero 2 eli keksi
+        k.tilimaksu("pekka", "12345");
+
+        // sitten suoritetaan varmistus, ett� pankin metodia tilisiirto on kutsuttu
+
+        //(String nimi, int viitenumero, String tililta, String tilille, int summa
+        verify(pankki).tilisiirto(eq("pekka"), eq(42), eq("12345"), eq("33333-44455"),eq(10));   
+        // toistaiseksi ei v�litetty kutsussa k�ytetyist� parametreista
+    }
+
+    @Test
+    public void kauppaPyytaaUudenViitenumeronTapahtumille() {
+
+        /*
+        aloitetaan asiointi, koriin lisätään tuote,
+         jota on varastossa tarpeeksi ja tuote joka on loppu ja suoritetaan ostos,
+          varmista että kutsutaan pankin metodia tilisiirto oikealla asiakkaalla, tilinumerolla ja summalla
+         */
+
+        // määritellään että tuote numero 1 on maito jonka hinta on 5 ja saldo 10
+
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.saldo(2)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
+        when(varasto.haeTuote(2)).thenReturn(new Tuote(2, "keksi", 5));
+
+        // sitten testattava kauppa 
+        Kauppa k = new Kauppa(varasto, pankki, viite);              
+
+        // tehdään ostokset
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);     // ostetaan tuotetta numero 1 eli maitoa
+        k.lisaaKoriin(2);     // ostetaan tuotetta numero 2 eli keksi
+        k.tilimaksu("pekka", "12345");
+        
+        verify(viite, times(1)).uusi();
+
+        // tehdään ostokset part 2
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);     // ostetaan tuotetta numero 1 eli maitoa
+        k.lisaaKoriin(2);     // ostetaan tuotetta numero 2 eli keksi
+        k.tilimaksu("akkep", "54321");
+
+        verify(viite, times(2)).uusi();
+
+        // sitten suoritetaan varmistus, ett� pankin metodia tilisiirto on kutsuttu
+
+        //(String nimi, int viitenumero, String tililta, String tilille, int summa
+        verify(pankki).tilisiirto(eq("pekka"), anyInt(), eq("12345"), eq("33333-44455"),eq(10));  
+        // toistaiseksi ei v�litetty kutsussa k�ytetyist� parametreista
+    }
+
+    @Test
+    public void kauppaPalauttaaTuotteenVarastoon() {
+
+        /*
+        aloitetaan asiointi, koriin lisätään tuote,
+         jota on varastossa tarpeeksi ja tuote joka on loppu ja suoritetaan ostos,
+          varmista että kutsutaan pankin metodia tilisiirto oikealla asiakkaalla, tilinumerolla ja summalla
+         */
+
+        // määritellään että tuote numero 1 on maito jonka hinta on 5 ja saldo 10
+
+        when(varasto.saldo(1)).thenReturn(10); 
+        when(varasto.saldo(2)).thenReturn(10); 
+        when(varasto.haeTuote(1)).thenReturn(new Tuote(1, "maito", 5));
+        when(varasto.haeTuote(2)).thenReturn(new Tuote(2, "keksi", 5));
+
+        // sitten testattava kauppa 
+        Kauppa k = new Kauppa(varasto, pankki, viite);              
+
+        // tehdään ostokset
+        k.aloitaAsiointi();
+        k.lisaaKoriin(1);     // ostetaan tuotetta numero 1 eli maitoa
+        k.lisaaKoriin(2);     // ostetaan tuotetta numero 2 eli keksi
+        k.poistaKorista(2);
+        k.tilimaksu("pekka", "12345");
+        
+        verify(varasto, times(1)).palautaVarastoon(new Tuote(2, "keksi", 5));
+
+
+        // sitten suoritetaan varmistus, ett� pankin metodia tilisiirto on kutsuttu
+
+        //(String nimi, int viitenumero, String tililta, String tilille, int summa
+        verify(pankki).tilisiirto(eq("pekka"), anyInt(), eq("12345"), eq("33333-44455"),eq(10));  
         // toistaiseksi ei v�litetty kutsussa k�ytetyist� parametreista
     }
 }
